@@ -10,11 +10,17 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api
     .trim()
     .replace(/\/$/, '')
 
+const extraHeaders = {}
+if (API_BASE_URL.includes('.loca.lt')) {
+    extraHeaders['bypass-tunnel-reminder'] = 'true'
+}
+
 // Создаём экземпляр Axios с настройками
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
+        ...extraHeaders,
     },
 })
 
