@@ -11,7 +11,7 @@ from app.infrastructure.database.base import get_db
 from app.api.deps import get_current_user
 from app.services.lesson_service import LessonService
 from app.api.v1.schemas.lesson import LessonResponse, LessonDetailsResponse, StartLessonResponse
-from app.domain.enums import EnglishLevel
+from app.domain.enums import EnglishLevel, Language
 
 router = APIRouter()
 
@@ -19,6 +19,7 @@ router = APIRouter()
 @router.get("/", response_model=List[LessonResponse])
 def get_lessons(
     level: Optional[EnglishLevel] = Query(None, description="Фильтр по уровню"),
+    language: Language = Query(Language.ENGLISH, description="Язык обучения"),
     current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -26,6 +27,7 @@ def get_lessons(
     Получить список всех уроков с прогрессом пользователя
     
     - **level**: Опциональный фильтр по уровню (A1, A2, B1, B2, C1)
+    - **language**: Язык обучения (ENGLISH, KYRGYZ)
     
     Требуется аутентификация
     """
@@ -33,7 +35,8 @@ def get_lessons(
     
     lessons = lesson_service.get_all_lessons(
         user_id=current_user["id"],
-        level=level
+        level=level,
+        language=language
     )
     
     return lessons

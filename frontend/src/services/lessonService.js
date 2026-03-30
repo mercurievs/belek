@@ -9,10 +9,12 @@ export const lessonService = {
     /**
      * Получить список всех уроков
      * @param {string} level - Фильтр по уровню (опционально)
+     * @param {string} language - Язык обучения (ENGLISH или KYRGYZ)
      * @returns {Promise} Список уроков
      */
-    getLessons: async (level = null) => {
-        const params = level ? { level } : {}
+    getLessons: async (level = null, language = 'ENGLISH') => {
+        const params = { language }
+        if (level) params.level = level
         const response = await api.get('/lessons/', { params })
         return response.data
     },

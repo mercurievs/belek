@@ -18,11 +18,12 @@ export const Lessons = () => {
     const [lessons, setLessons] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [language, setLanguage] = useState('ENGLISH')
 
-    // Загрузка уроков при монтировании компонента
+    // Загрузка уроков при монтировании компонента или смене языка
     useEffect(() => {
         loadLessons()
-    }, [])
+    }, [language])
 
     /**
      * Загрузка списка уроков
@@ -32,7 +33,7 @@ export const Lessons = () => {
             setLoading(true)
             setError('')
 
-            const data = await lessonService.getLessons()
+            const data = await lessonService.getLessons(null, language)
             setLessons(data)
         } catch (err) {
             setError(err.response?.data?.detail || 'Ошибка загрузки уроков')
@@ -58,8 +59,30 @@ export const Lessons = () => {
                     📚 Все уроки
                 </h1>
                 <p className="text-xl text-gray-700">
-                    Выберите урок для изучения английского языка
+                    Выберите урок для изучения {language === 'ENGLISH' ? 'английского языка' : 'кыргызского языка'}
                 </p>
+            </div>
+
+            {/* Выбор языка */}
+            <div className="mb-6 flex gap-4">
+                <button
+                    onClick={() => setLanguage('ENGLISH')}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all ${language === 'ENGLISH'
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                >
+                    🇬🇧 Английский
+                </button>
+                <button
+                    onClick={() => setLanguage('KYRGYZ')}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all ${language === 'KYRGYZ'
+                            ? 'bg-red-600 text-white shadow-lg'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                >
+                    🇰🇬 Кыргызский
+                </button>
             </div>
 
             {/* Ошибка */}

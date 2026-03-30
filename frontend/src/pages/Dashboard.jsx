@@ -146,7 +146,7 @@ export const Dashboard = () => {
                 </Card>
 
                 {/* Действия с анимацией */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <Link to="/lessons" className="block group">
                         <Card className="text-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
                             <div className="text-7xl mb-4 group-hover:animate-bounce">📖</div>

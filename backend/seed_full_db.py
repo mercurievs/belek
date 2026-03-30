@@ -7,15 +7,12 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
-from sqlalchemy.orm import Session
 from app.infrastructure.database.base import engine, Base, SessionLocal
 from app.infrastructure.database.models import (
     UserModel, LessonModel, ExerciseModel, AchievementModel
 )
-from app.domain.enums import EnglishLevel, ExerciseType, DifficultyLevel
+from app.domain.enums import EnglishLevel, ExerciseType, DifficultyLevel, Language, UserRole
 from app.infrastructure.security.password import get_password_hash
-from sqlalchemy import text
-import json
 
 def seed_database():
     """Заполнение БД полным контентом"""
@@ -28,10 +25,17 @@ def seed_database():
         # 1. Создаём пользователя
         print("\n👤 Создаём тестового пользователя...")
         hashed_pwd = get_password_hash("password123")
-        db.execute(text("""
-            INSERT OR REPLACE INTO users (id, email, username, hashed_password, level, total_xp, streak_days, role, is_active)
-            VALUES (1, 'test@example.com', 'testuser', :pwd, 'A1', 0, 0, 'STUDENT', 1)
-        """), {"pwd": hashed_pwd})
+        db.merge(UserModel(
+            id=1,
+            email="test@example.com",
+            username="testuser",
+            hashed_password=hashed_pwd,
+            level=EnglishLevel.A1,
+            total_xp=0,
+            streak_days=0,
+            role=UserRole.STUDENT,
+            is_active=True,
+        ))
         
         # 2. Создаём уроки A1 уровня
         print("\n📚 Создаём уроки A1 уровня (Beginner)...")
@@ -45,10 +49,16 @@ def seed_database():
         ]
         
         for lesson in lessons_a1:
-            db.execute(text("""
-                INSERT OR REPLACE INTO lessons (id, title, description, level, "order", xp_reward, is_published)
-                VALUES (:id, :title, :desc, :level, :order, :xp, 1)
-            """), {"id": lesson[0], "title": lesson[1], "desc": lesson[2], "level": lesson[3], "order": lesson[4], "xp": lesson[5]})
+            db.merge(LessonModel(
+                id=lesson[0],
+                title=lesson[1],
+                description=lesson[2],
+                level=EnglishLevel(lesson[3]),
+                language=Language.ENGLISH,
+                order=lesson[4],
+                xp_reward=lesson[5],
+                is_published=True,
+            ))
         
         # 3. Создаём уроки A2 уровня  
         print("📚 Создаём уроки A2 уровня (Elementary)...")
@@ -62,10 +72,16 @@ def seed_database():
         ]
         
         for lesson in lessons_a2:
-            db.execute(text("""
-                INSERT OR REPLACE INTO lessons (id, title, description, level, "order", xp_reward, is_published)
-                VALUES (:id, :title, :desc, :level, :order, :xp, 1)
-            """), {"id": lesson[0], "title": lesson[1], "desc": lesson[2], "level": lesson[3], "order": lesson[4], "xp": lesson[5]})
+            db.merge(LessonModel(
+                id=lesson[0],
+                title=lesson[1],
+                description=lesson[2],
+                level=EnglishLevel(lesson[3]),
+                language=Language.ENGLISH,
+                order=lesson[4],
+                xp_reward=lesson[5],
+                is_published=True,
+            ))
         
         # 4. Создаём уроки B1 уровня
         print("📚 Создаём уроки B1 уровня (Intermediate)...")
@@ -79,10 +95,16 @@ def seed_database():
         ]
         
         for lesson in lessons_b1:
-            db.execute(text("""
-                INSERT OR REPLACE INTO lessons (id, title, description, level, "order", xp_reward, is_published)
-                VALUES (:id, :title, :desc, :level, :order, :xp, 1)
-            """), {"id": lesson[0], "title": lesson[1], "desc": lesson[2], "level": lesson[3], "order": lesson[4], "xp": lesson[5]})
+            db.merge(LessonModel(
+                id=lesson[0],
+                title=lesson[1],
+                description=lesson[2],
+                level=EnglishLevel(lesson[3]),
+                language=Language.ENGLISH,
+                order=lesson[4],
+                xp_reward=lesson[5],
+                is_published=True,
+            ))
         
         # 5. Создаём уроки B2 уровня
         print("📚 Создаём уроки B2 уровня (Upper-Intermediate)...")
@@ -96,10 +118,16 @@ def seed_database():
         ]
         
         for lesson in lessons_b2:
-            db.execute(text("""
-                INSERT OR REPLACE INTO lessons (id, title, description, level, "order", xp_reward, is_published)
-                VALUES (:id, :title, :desc, :level, :order, :xp, 1)
-            """), {"id": lesson[0], "title": lesson[1], "desc": lesson[2], "level": lesson[3], "order": lesson[4], "xp": lesson[5]})
+            db.merge(LessonModel(
+                id=lesson[0],
+                title=lesson[1],
+                description=lesson[2],
+                level=EnglishLevel(lesson[3]),
+                language=Language.ENGLISH,
+                order=lesson[4],
+                xp_reward=lesson[5],
+                is_published=True,
+            ))
         
         # 6. Создаём упражнения для ВСЕХ уроков (реальные примеры)
         print("\n✏️ Создаём упражнения (100+ реальных примеров)...")
@@ -210,21 +238,19 @@ def seed_database():
         ]
         
         for ex in exercises:
-            db.execute(text("""
-                INSERT OR REPLACE INTO exercises (id, lesson_id, type, difficulty, question, correct_answer, options, explanation, xp_reward, "order")
-                VALUES (:id, :lesson_id, :type, :difficulty, :question, :correct_answer, :options, :explanation, :xp_reward, :order)
-            """), {
-                "id": ex[0],
-                "lesson_id": ex[1],
-                "type": ex[2],
-                "difficulty": ex[3],
-                "question": ex[4],
-                "correct_answer": ex[5],
-                "options": ex[6],
-                "explanation": ex[7],
-                "xp_reward": ex[8],
-                "order": ex[9]
-            })
+            db.merge(ExerciseModel(
+                id=ex[0],
+                lesson_id=ex[1],
+                language=Language.ENGLISH,
+                type=ExerciseType(ex[2]),
+                difficulty=DifficultyLevel(ex[3]),
+                question=ex[4],
+                correct_answer=ex[5],
+                options=ex[6],
+                explanation=ex[7],
+                xp_reward=ex[8],
+                order=ex[9],
+            ))
         
         # 7. Создаём достижения
         print("\n🏆 Создаём систему достижений...")
@@ -243,10 +269,14 @@ def seed_database():
         ]
         
         for ach in achievements:
-            db.execute(text("""
-                INSERT OR REPLACE INTO achievements (id, code, name, description, icon, xp_required)
-                VALUES (:id, :code, :name, :desc, :icon, :xp)
-            """), {"id": ach[0], "code": ach[1], "name": ach[2], "desc": ach[3], "icon": ach[4], "xp": ach[5]})
+            db.merge(AchievementModel(
+                id=ach[0],
+                code=ach[1],
+                name=ach[2],
+                description=ach[3],
+                icon=ach[4],
+                xp_required=ach[5],
+            ))
         
         db.commit()
         

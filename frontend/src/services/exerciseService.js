@@ -8,10 +8,13 @@ import api from './api'
 export const exerciseService = {
     /**
      * Получить все упражнения
+     * @param {string} language - Язык обучения (ENGLISH или KYRGYZ)
      * @returns {Promise} Список всех упражнений
      */
-    getExercises: async () => {
-        const response = await api.get('/exercises')
+    getExercises: async (language = 'ENGLISH') => {
+        const response = await api.get('/exercises', {
+            params: { language }
+        })
         return response.data
     },
 

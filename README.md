@@ -23,7 +23,7 @@
 
 ## 📁 Структура проекта
 
-```
+```text
 eng_curs/
 ├── ARCHITECTURE.md          # 📐 Детальная архитектура проекта
 ├── backend/                 # 🔥 Backend (FastAPI + Python)
@@ -89,6 +89,51 @@ npm run dev
 
 Frontend запустится на <http://localhost:5173>
 
+## ☁️ Production Deploy
+
+Лучший вариант для этого проекта:
+
+- Frontend: Vercel
+- Backend: Render
+- Database: PostgreSQL на Render
+
+### Почему не только GitHub
+
+GitHub подходит для хранения кода, но не для полноценного запуска FastAPI backend. GitHub Pages можно использовать только для frontend, поэтому для рабочего full-stack деплоя нужен отдельный backend-хостинг.
+
+### Backend на Render
+
+В репозитории подготовлен blueprint [render.yaml](render.yaml).
+
+Python для production зафиксирован в [backend/runtime.txt](backend/runtime.txt).
+
+Нужные переменные окружения для backend:
+
+- DATABASE_URL
+- SECRET_KEY
+- DEBUG=False
+- BACKEND_CORS_ORIGINS с адресом frontend на Vercel
+- API_V1_PREFIX=/api/v1
+
+После первого деплоя выполните единый seed-скрипт уже в Render Shell:
+
+```bash
+cd backend
+python seed_all.py
+```
+
+### Frontend на Vercel
+
+Во frontend добавлен конфиг [frontend/vercel.json](frontend/vercel.json) для SPA-роутинга.
+
+Node.js для сборки зафиксирован в [frontend/package.json](frontend/package.json).
+
+Нужная переменная окружения:
+
+- VITE_API_URL=<https://your-render-backend.onrender.com/api/v1>
+
+Перед деплоем frontend укажите production API в Vercel env variables.
+
 ## 👤 Тестовые данные
 
 После запуска `seed_full_db.py` будет создан тестовый пользователь:
@@ -115,7 +160,7 @@ Frontend запустится на <http://localhost:5173>
 
 ### A2 (Elementary) - 5 уроков
 
-6. Past Simple - прошедшее время
+1. Past Simple - прошедшее время
 2. Future Simple с will
 3. Сравнительная степень прилагательных
 4. Present Continuous
@@ -123,7 +168,7 @@ Frontend запустится на <http://localhost:5173>
 
 ### B1 (Intermediate) - 5 уроков
 
-11. Present Perfect
+1. Present Perfect
 2. First Conditional
 3. Модальные глаголы
 4. Past Continuous
@@ -131,7 +176,7 @@ Frontend запустится на <http://localhost:5173>
 
 ### B2 (Upper-Intermediate) - 5 уроков
 
-16. Passive Voice
+1. Passive Voice
 2. Reported Speech
 3. Second Conditional
 4. Relative Clauses
@@ -294,6 +339,8 @@ curl -X GET "http://localhost:8000/api/v1/lessons" \
 
 ---
 
-**Создано с ❤️ для изучения английского языка**
+## Заключение
 
-*Проект демонстрирует современные подходы к разработке full-stack приложений с Clean Architecture*
+Создано для изучения английского языка.
+
+Проект демонстрирует современные подходы к разработке full-stack приложений с Clean Architecture.

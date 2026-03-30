@@ -7,7 +7,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 
 from app.infrastructure.database.models import LessonModel
-from app.domain.enums import EnglishLevel
+from app.domain.enums import EnglishLevel, Language
 
 
 class LessonRepository:
@@ -22,6 +22,7 @@ class LessonRepository:
         description: str, 
         level: EnglishLevel, 
         order: int,
+        language: Language = Language.ENGLISH,
         xp_reward: int = 50
     ) -> LessonModel:
         """Создать новый урок"""
@@ -29,6 +30,7 @@ class LessonRepository:
             title=title,
             description=description,
             level=level,
+            language=language,
             order=order,
             xp_reward=xp_reward,
             is_published=True
@@ -42,20 +44,24 @@ class LessonRepository:
         """Получить урок по ID"""
         return self.db.query(LessonModel).filter(LessonModel.id == lesson_id).first()
     
-    def get_by_level(self, level: EnglishLevel) -> List[LessonModel]:
-        """Получить все уроки определённого уровня"""
+    def get_by_level(self, level: EnglishLevel, language: Language = Language.ENGLISH) -> List[LessonModel]:
+        """Получить все уроки определённого уровня и языка"""
         return (
             self.db.query(LessonModel)
-            .filter(LessonModel.level == level, LessonModel.is_published == True)
+            .filter(
+                LessonModel.level == level, 
+                LessonModel.language == language,
+                LessonModel.is_published == True
+            )
             .order_by(LessonModel.order)
             .all()
         )
     
-    def get_all_published(self, skip: int = 0, limit: int = 100) -> List[LessonModel]:
-        """Получить все опубликованные уроки"""
+    def get_all_published(self, skip: int = 0, limit: int = 100, language: Language = Language.ENGLISH) -> List[LessonModel]:
+        """Получить все опубликованные уроки определённого языка"""
         return (
             self.db.query(LessonModel)
-            .filter(LessonModel.is_published == True)
+            .filter(LessonModel.is_published == True, LessonModel.language == language)
             .order_by(LessonModel.level, LessonModel.order)
             .offset(skip)
             .limit(limit)

@@ -3,9 +3,9 @@ Exercise Endpoints
 API endpoints для работы с упражнениями
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from app.infrastructure.database.base import get_db
 from app.api.deps import get_current_user
@@ -15,24 +15,28 @@ from app.api.v1.schemas.exercise import (
     SubmitAnswerRequest, 
     SubmitAnswerResponse
 )
+from app.domain.enums import Language
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[ExerciseResponse])
 def get_all_exercises(
+    language: Language = Query(Language.ENGLISH, description="Язык обучения"),
     current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Получить все упражнения для практики
     
+    - **language**: Язык обучения (ENGLISH, KYRGYZ)
+    
     Требуется аутентификация
     
     Примечание: Правильные ответы НЕ возвращаются в ответе
     """
     exercise_service = ExerciseService(db)
-    exercises = exercise_service.get_all_exercises()
+    exercises = exercise_service.get_all_exercises(language=language)
     return exercises
 
 

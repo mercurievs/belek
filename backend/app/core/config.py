@@ -3,6 +3,7 @@
 Загружает переменные окружения из .env файла
 """
 
+import json
 from typing import List
 from pydantic_settings import BaseSettings
 from pydantic import validator
@@ -17,7 +18,7 @@ class Settings(BaseSettings):
     # Application
     APP_NAME: str = "English Learning Platform"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+    DEBUG: bool = False
     
     # Database
     DATABASE_URL: str = "sqlite:///./english_learning.db"
@@ -37,6 +38,8 @@ class Settings(BaseSettings):
     def assemble_cors_origins(cls, v):
         """Преобразует строку CORS origins в список"""
         if isinstance(v, str):
+            if v.startswith("["):
+                return json.loads(v)
             return [i.strip() for i in v.split(",")]
         return v
     

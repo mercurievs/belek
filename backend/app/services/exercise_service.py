@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.infrastructure.repositories.exercise_repository import ExerciseRepository
 from app.infrastructure.repositories.progress_repository import ProgressRepository
 from app.infrastructure.repositories.user_repository import UserRepository
-from app.domain.enums import ExerciseType
+from app.domain.enums import ExerciseType, Language
 
 
 class ExerciseService:
@@ -28,14 +28,17 @@ class ExerciseService:
         self.progress_repo = ProgressRepository(db)
         self.user_repo = UserRepository(db)
     
-    def get_all_exercises(self) -> List[Dict]:
+    def get_all_exercises(self, language: Language = Language.ENGLISH) -> List[Dict]:
         """
         Получить все упражнения для практики
+        
+        Args:
+            language: Язык обучения
         
         Returns:
             Список всех упражнений
         """
-        exercises = self.exercise_repo.get_all()
+        exercises = self.exercise_repo.get_all(language=language)
         
         result = []
         for exercise in exercises:

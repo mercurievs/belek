@@ -15,10 +15,11 @@ export const Practice = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [selectedDifficulty, setSelectedDifficulty] = useState('ALL')
+    const [language, setLanguage] = useState('ENGLISH')
 
     useEffect(() => {
         loadRandomExercises()
-    }, [selectedDifficulty])
+    }, [selectedDifficulty, language])
 
     /**
      * Загрузка случайных упражнений
@@ -29,7 +30,7 @@ export const Practice = () => {
             setError('')
 
             // Получаем все упражнения
-            const allExercises = await exerciseService.getExercises()
+            const allExercises = await exerciseService.getExercises(language)
 
             // Фильтруем по сложности
             let filtered = allExercises
@@ -75,6 +76,28 @@ export const Practice = () => {
                     </p>
                 </div>
 
+                {/* Выбор языка */}
+                <div className="mb-6 flex gap-4">
+                    <button
+                        onClick={() => setLanguage('ENGLISH')}
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all ${language === 'ENGLISH'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                    >
+                        🇬🇧 Английский
+                    </button>
+                    <button
+                        onClick={() => setLanguage('KYRGYZ')}
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all ${language === 'KYRGYZ'
+                                ? 'bg-red-600 text-white shadow-lg'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                    >
+                        🇰🇬 Кыргызский
+                    </button>
+                </div>
+
                 {/* Фильтр по сложности */}
                 <Card className="mb-6 bg-white shadow-lg">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Выберите сложность:</h2>
@@ -85,8 +108,8 @@ export const Practice = () => {
                                 onClick={() => setSelectedDifficulty(level)}
                                 variant={selectedDifficulty === level ? 'primary' : 'secondary'}
                                 className={`px-6 py-3 transform hover:scale-105 transition-all duration-300 ${selectedDifficulty === level
-                                        ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg'
-                                        : 'bg-gray-100 hover:bg-gray-200'
+                                    ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg'
+                                    : 'bg-gray-100 hover:bg-gray-200'
                                     }`}
                             >
                                 {level === 'ALL' && '🎯 Все уровни'}
@@ -133,8 +156,8 @@ export const Practice = () => {
                                             {exercise.type === 'TRANSLATION' && '🌍 Перевод'}
                                         </span>
                                         <span className={`px-3 py-1 text-sm font-bold rounded-full ${exercise.difficulty === 'EASY' ? 'bg-green-100 text-green-700' :
-                                                exercise.difficulty === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-red-100 text-red-700'
+                                            exercise.difficulty === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
                                             {exercise.difficulty === 'EASY' && '🟢 Легкий'}
                                             {exercise.difficulty === 'MEDIUM' && '🟡 Средний'}

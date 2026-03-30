@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.infrastructure.repositories.lesson_repository import LessonRepository
 from app.infrastructure.repositories.exercise_repository import ExerciseRepository
 from app.infrastructure.repositories.progress_repository import ProgressRepository
-from app.domain.enums import EnglishLevel, LessonStatus
+from app.domain.enums import EnglishLevel, LessonStatus, Language
 
 
 class LessonService:
@@ -31,7 +31,8 @@ class LessonService:
     def get_all_lessons(
         self, 
         user_id: Optional[int] = None,
-        level: Optional[EnglishLevel] = None
+        level: Optional[EnglishLevel] = None,
+        language: Language = Language.ENGLISH
     ) -> List[Dict]:
         """
         Получить список всех уроков с прогрессом пользователя
@@ -39,15 +40,16 @@ class LessonService:
         Args:
             user_id: ID пользователя (опционально)
             level: Фильтр по уровню (опционально)
+            language: Язык обучения
         
         Returns:
             Список уроков с информацией о прогрессе
         """
         # Получаем уроки
         if level:
-            lessons = self.lesson_repo.get_by_level(level)
+            lessons = self.lesson_repo.get_by_level(level, language)
         else:
-            lessons = self.lesson_repo.get_all_published()
+            lessons = self.lesson_repo.get_all_published(language=language)
         
         # Если пользователь указан, добавляем прогресс
         if user_id:
@@ -63,6 +65,7 @@ class LessonService:
                 "title": lesson.title,
                 "description": lesson.description,
                 "level": lesson.level,
+                "language": lesson.language,
                 "order": lesson.order,
                 "xp_reward": lesson.xp_reward
             }

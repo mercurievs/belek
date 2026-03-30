@@ -9,7 +9,7 @@ from sqlalchemy.sql import func
 from datetime import datetime
 
 from app.infrastructure.database.base import Base
-from app.domain.enums import EnglishLevel, ExerciseType, DifficultyLevel, LessonStatus, UserRole
+from app.domain.enums import EnglishLevel, ExerciseType, DifficultyLevel, LessonStatus, UserRole, Language
 
 
 class UserModel(Base):
@@ -57,6 +57,7 @@ class LessonModel(Base):
     content = Column(Text, nullable=True)  # Теоретический материал урока
     
     # Характеристики урока
+    language = Column(Enum(Language), default=Language.ENGLISH, nullable=False, index=True)
     level = Column(Enum(EnglishLevel), nullable=False, index=True)
     order = Column(Integer, nullable=False)  # Порядок в курсе
     xp_reward = Column(Integer, default=50, nullable=False)
@@ -84,6 +85,7 @@ class ExerciseModel(Base):
     lesson_id = Column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"), nullable=False)
     
     # Тип и сложность
+    language = Column(Enum(Language), default=Language.ENGLISH, nullable=False, index=True)
     type = Column(Enum(ExerciseType), nullable=False)
     difficulty = Column(Enum(DifficultyLevel), default=DifficultyLevel.MEDIUM)
     

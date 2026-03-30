@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 import json
 
 from app.infrastructure.database.models import ExerciseModel
-from app.domain.enums import ExerciseType, DifficultyLevel
+from app.domain.enums import ExerciseType, DifficultyLevel, Language
 
 
 class ExerciseRepository:
@@ -25,6 +25,7 @@ class ExerciseRepository:
         correct_answer: str,
         options: List[str] = None,
         difficulty: DifficultyLevel = DifficultyLevel.MEDIUM,
+        language: Language = Language.ENGLISH,
         xp_reward: int = 10,
         explanation: str = "",
         order: int = 0
@@ -37,6 +38,7 @@ class ExerciseRepository:
             correct_answer=correct_answer,
             options=json.dumps(options) if options else None,
             difficulty=difficulty,
+            language=language,
             xp_reward=xp_reward,
             explanation=explanation,
             order=order
@@ -50,9 +52,14 @@ class ExerciseRepository:
         """Получить упражнение по ID"""
         return self.db.query(ExerciseModel).filter(ExerciseModel.id == exercise_id).first()
     
-    def get_all(self) -> List[ExerciseModel]:
-        """Получить все упражнения"""
-        return self.db.query(ExerciseModel).order_by(ExerciseModel.order).all()
+    def get_all(self, language: Language = Language.ENGLISH) -> List[ExerciseModel]:
+        """Получить все упражнения определённого языка"""
+        return (
+            self.db.query(ExerciseModel)
+            .filter(ExerciseModel.language == language)
+            .order_by(ExerciseModel.order)
+            .all()
+        )
     
     def get_by_lesson_id(self, lesson_id: int) -> List[ExerciseModel]:
         """Получить все упражнения урока"""

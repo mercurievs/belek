@@ -44,3 +44,9 @@ class UserRole(str, Enum):
     STUDENT = "STUDENT"
     TEACHER = "TEACHER"
     ADMIN = "ADMIN"
+
+
+class Language(str, Enum):
+    """Поддерживаемые языки обучения"""
+    ENGLISH = "ENGLISH"
+    KYRGYZ = "KYRGYZ"
