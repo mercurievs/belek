@@ -63,8 +63,8 @@ export const Register = () => {
         // Password
         if (!formData.password) {
             newErrors.password = 'Пароль обязателен'
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Минимум 6 символов'
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'Минимум 8 символов'
         }
 
         // Confirm password

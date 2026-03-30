@@ -6,7 +6,9 @@
 import axios from 'axios'
 
 // Базовый URL backend API
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1')
+    .trim()
+    .replace(/\/$/, '')
 
 // Создаём экземпляр Axios с настройками
 const api = axios.create({
