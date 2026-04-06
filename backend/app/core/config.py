@@ -4,7 +4,7 @@
 """
 
 import json
-from typing import List
+from typing import ClassVar, List
 from pydantic_settings import BaseSettings
 from pydantic import validator
 
@@ -29,19 +29,35 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"]
+    LOCAL_CORS_ORIGINS: ClassVar[List[str]] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    BACKEND_CORS_ORIGINS: List[str] = LOCAL_CORS_ORIGINS.copy()
     
     # API
     API_V1_PREFIX: str = "/api/v1"
     
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v):
-        """Преобразует строку CORS origins в список"""
+        """Преобразует строку CORS origins в список и добавляет локальные origin для разработки"""
         if isinstance(v, str):
             if v.startswith("["):
-                return json.loads(v)
-            return [i.strip() for i in v.split(",")]
-        return v
+                parsed = json.loads(v)
+            else:
+                parsed = [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, list):
+            parsed = v
+        else:
+            parsed = []
+
+        # Сохраняем пользовательские origin, но всегда разрешаем локальную разработку.
+        merged = parsed + cls.LOCAL_CORS_ORIGINS
+        return list(dict.fromkeys(merged))
     
     class Config:
         env_file = ".env"
